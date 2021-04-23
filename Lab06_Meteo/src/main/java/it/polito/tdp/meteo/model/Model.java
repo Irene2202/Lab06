@@ -33,6 +33,10 @@ public class Model {
 		rilevamenti=meteoDao.getAllRilevamentiMese(mese);
 		umiditaMedia=new HashMap<>();
 		calcolaMediaUmidita();
+		/*
+		for(Rilevamento r:rilevamenti)
+			System.out.println(r+" "+r.getLocalita()+"\n");
+			*/
 		
 		return umiditaMedia;
 	}
@@ -70,6 +74,7 @@ public class Model {
 				soluzioneMigliore=new ArrayList<>(parziale);
 				costoMigliore=costo;
 			}
+			return;
 		}
 		
 		//ricorsione
@@ -80,6 +85,7 @@ public class Model {
 				Citta cittaPrecedente2=null;
 				
 				parziale.add(c);
+				c.increaseCounter();
 				
 				if(livello>0 && livello<3) {
 					//controllo di rimanere nella stessa città i primi 3 giorni
@@ -124,31 +130,30 @@ public class Model {
 		int umiditaMil=0;
 		
 		for(int i=0; i<rilevamenti.size(); i++) {
-			if(rilevamenti.get(i).getLocalita().equals("genova")) {
+			if(rilevamenti.get(i).getLocalita().equals("Genova")) {
 				umiditaGen+=rilevamenti.get(i).getUmidita();
 				rilGenova++;
-				System.out.println(rilTorino);
-
-			} else if (rilevamenti.get(i).getLocalita().equals("milano")) {
+				//System.out.println(rilTorino);
+			} else if (rilevamenti.get(i).getLocalita().equals("Milano")) {
 				umiditaMil+=rilevamenti.get(i).getUmidita();
 				rilMilano++;
-			} else if (rilevamenti.get(i).getLocalita().equals("torino")) {
+			} else if (rilevamenti.get(i).getLocalita().equals("Torino")) {
 				umiditaTor+=rilevamenti.get(i).getUmidita();
 				rilTorino++;
-				System.out.println(rilTorino);
+				//System.out.println(rilTorino);
 			}
 		}
 		Double umidita= (double)umiditaGen/(double)rilGenova;
 		umiditaMedia.put("genova", umidita);
-		System.out.println(umidita);
+		//System.out.println(umidita);
 		
 		umidita=(double)umiditaMil/(double)rilMilano;
 		umiditaMedia.put("milano", umidita);
-		System.out.println(umidita);
+		//System.out.println(umidita);
 
 		umidita=(double)umiditaTor/(double)rilTorino;
 		umiditaMedia.put("torino", umidita);
-		System.out.println(umidita);
+		//System.out.println(umidita);
 
 		
 	}
