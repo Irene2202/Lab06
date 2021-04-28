@@ -51,7 +51,7 @@ public class Model {
 		parziale=new ArrayList<>();
 		costoMigliore=Double.MAX_VALUE;
 		cerca(parziale,0);
-		
+		System.out.println(costoMigliore+" ");
 		return soluzioneMigliore;
 	}
 	
@@ -74,51 +74,55 @@ public class Model {
 				soluzioneMigliore=new ArrayList<>(parziale);
 				costoMigliore=costo;
 			}
-			return;
+			//return;
 		}
 		
 		//ricorsione
 		for(Citta c:citta) {
-			if(c.getCounter()<this.NUMERO_GIORNI_CITTA_MAX) {
-				boolean nuova=false;
-				Citta cittaPrecedente1=null;
-				Citta cittaPrecedente2=null;
-				
+			if(isValid(c, parziale)) {
 				parziale.add(c);
-				c.increaseCounter();
-				
-				if(livello>0 && livello<3) {
-					//controllo di rimanere nella stessa città i primi 3 giorni
-					if(!(parziale.get(livello).getNome().equals(parziale.get(livello-1).getNome())))
-						return;
-				}
-				if(livello>=3) {
-					//controllo se ho cambiato citta -> se si verifico poi di rimanerci almeno 3 giorni
-					if(!(parziale.get(livello).getNome().equals(parziale.get(livello-1).getNome()) && !nuova)) {
-						nuova=true;
-						cittaPrecedente1=parziale.get(livello);
-						cittaPrecedente2=null;
-					}
-					else if(nuova && cittaPrecedente2==null) {
-						if(parziale.get(livello).getNome().equals(cittaPrecedente1.getNome()))
-							cittaPrecedente2=parziale.get(livello);
-						else 
-							return;
-					}
-					else if(nuova && cittaPrecedente2!=null) {
-						if(parziale.get(livello).getNome().equals(cittaPrecedente2.getNome()))
-							nuova=false;
-						else
-							return;
-					}
-				}
-				
 				cerca(parziale, livello+1);
 				parziale.remove(c);
-				c.setCounter(c.getCounter()-1);
 			}
 		}
 		
+	}
+
+	private boolean isValid(Citta citta, List<Citta> parziale) {
+		if(parziale.size()==0)
+			return true;
+		
+		int contaGiorni=0;
+		for(Citta c: parziale) {
+			if(c.equals(citta))
+				contaGiorni++;
+		}
+		if(contaGiorni>=this.NUMERO_GIORNI_CITTA_MAX)
+			return false;
+		
+		//Verifico i giorni min consecutivi
+		if(parziale.size()==1) { //sono al secondo giorno
+			if(parziale.get(0).equals(citta))
+				return true;
+			else
+				return false;
+		}
+		if(parziale.size()==2) { //sono al terzo giorno
+			if(parziale.get(1).equals(citta))
+				return true;
+			else
+				return false;
+		}
+		
+		//siamo dopo il terzo giorno: posso cambiare città
+		if(parziale.get(parziale.size()-1).equals(citta))
+			return true; //non ho cambiato città
+		
+		if(parziale.get(parziale.size()-1).equals(parziale.get(parziale.size()-2)) 
+				&& parziale.get(parziale.size()-2).equals(parziale.get(parziale.size()-3)))
+			return true;
+		
+		return false;
 	}
 
 	private void calcolaMediaUmidita() {
